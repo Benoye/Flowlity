@@ -1,0 +1,14 @@
+[
+    {"product_id": 1, "product_name": "Apple II", "date":"01-09-1984", "inventory_level": 12},
+    {"product_id": 1, "product_name": "Apple II", "date":"02-09-1984", "inventory_level": 56},
+    {"product_id": 1, "product_name": "Apple II", "date":"03-09-1984", "inventory_level": 9},
+    {"product_id": 1, "product_name": "Apple II", "date":"04-09-1984", "inventory_level": 156},
+    {"product_id": 1, "product_name": "Apple Lisa 2", "date":"01-09-1989", "inventory_level": 15640},
+    {"product_id": 1, "product_name": "Apple Lisa 2", "date":"02-09-1989", "inventory_level": 2597},
+    {"product_id": 1, "product_name": "Apple Lisa 2", "date":"03-09-1989", "inventory_level": 1234},
+    {"product_id": 1, "product_name": "Apple Lisa 2", "date":"04-09-1989", "inventory_level": 97561},
+    {"product_id": 1, "product_name": "Macintosh", "date":"01-09-1984", "inventory_level": 123},
+    {"product_id": 1, "product_name": "Macintosh", "date":"02-09-1984", "inventory_level": 4896},
+    {"product_id": 1, "product_name": "Macintosh", "date":"03-09-1984", "inventory_level": 14789},
+    {"product_id": 1, "product_name": "Macintosh", "date":"04-09-1984", "inventory_level": 100590}
+]
