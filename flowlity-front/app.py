@@ -7,17 +7,20 @@ import dash_html_components as html
 import dash_table
 import requests
 from dash.dependencies import Output, Input
-import pandas as pd
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/solar.csv')
 
 COLORS = {
     'background': '#111111',
     'text': '#7FDBFF'
 }
+
+dropdown_url = 'http://127.0.0.1:8000/products/all/draw_graph/'
+dropdown_data = json.loads(requests.get(dropdown_url).content)
+dropdown_options = [{'label': 'All', 'value': 'all'}] \
+                   + [{'label': p['name'], 'value': p['id']} for p in dropdown_data]
 
 app.layout = html.Div(children=[
     html.H1(
@@ -28,16 +31,11 @@ app.layout = html.Div(children=[
         }
     ),
 
-    html.Label('Dropdown'),
+    html.Label('Filter product by name'),
     dcc.Dropdown(
         id='inventory-dropdown',
-        options=[
-            {'label': 'All', 'value': 'ALL'},
-            {'label': 'New York City', 'value': 'NYC'},
-            {'label': u'Montréal', 'value': 'MTL'},
-            {'label': 'San Francisco', 'value': 'SF'}
-        ],
-        value='MTL'
+        options=dropdown_options,
+        value='all'
     ),
 
     dcc.Graph(
@@ -78,7 +76,7 @@ app.layout = html.Div(children=[
     [Input(component_id='inventory-dropdown', component_property='value')]
 )
 def update_graph(input_value):
-    url = 'http://127.0.0.1:8000/products/draw_graph/'
+    url = 'http://127.0.0.1:8000/products/%s/draw_graph/' % input_value
     content = json.loads(requests.get(url).content)
     return {
         'data': content,
@@ -94,7 +92,11 @@ def update_graph(input_value):
     [Input(component_id='inventory-dropdown', component_property='value')]
 )
 def update_table(input_value):
-    url = 'http://127.0.0.1:8000/products/'
+    if input_value == 'all':
+        url = 'http://127.0.0.1:8000/products/'
+    else:
+        url = 'http://127.0.0.1:8000/products/%s' % input_value
+
     content = json.loads(requests.get(url).content)
     columns = [{'name': k, 'id': k} for k in content[0].keys()]
     return columns, content
