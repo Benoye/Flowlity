@@ -2,10 +2,11 @@ import datetime
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.utils import json
 
 from inventory.models import Product
-from inventory.serializers import ProductSerializer, ProductModelSerializer
+from inventory.serializers import ProductModelSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -29,16 +30,15 @@ class ProductViewSet(viewsets.ModelViewSet):
             p_obj.append(o)
         return p_obj
 
-    # @action(detail=False)
-    # def draw_graph_all(self, request):
-    #     objects = self.get_queryset()
-    #
-    #     graph_data = [
-    #         {'x': [], 'y': [], 'type': 'bar', 'name': 'SF'},
-    #         {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
-    #     ]
-    #     for o in objects:
-    #         if
-    #         graph_data.append({
-    #             'x':
-    #         })
+    @action(detail=False)
+    def draw_graph(self, request):
+        graph_data_helper = {}
+        objects = self.get_queryset()
+        for o in objects:
+            if o.id in graph_data_helper.keys():
+                graph_data_helper[o.id]['x'].append(o.date)
+                graph_data_helper[o.id]['y'].append(o.inventory)
+            else:
+                graph_data_helper[o.id] = {'x': [o.date], 'y': [o.inventory], 'type': 'bar', 'name': o.name}
+        return Response(graph_data_helper.values())
+
