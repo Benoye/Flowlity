@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
+import json
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
+import requests
+from dash.dependencies import Output, Input
+import pandas as pd
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/solar.csv')
 
 COLORS = {
     'background': '#111111',
@@ -24,7 +30,9 @@ app.layout = html.Div(children=[
 
     html.Label('Dropdown'),
     dcc.Dropdown(
+        id='inventory-dropdown',
         options=[
+            {'label': 'All', 'value': 'ALL'},
             {'label': 'New York City', 'value': 'NYC'},
             {'label': u'Montréal', 'value': 'MTL'},
             {'label': 'San Francisco', 'value': 'SF'}
@@ -45,28 +53,55 @@ app.layout = html.Div(children=[
         }
     ),
 
-    html.Table([
-        html.Tr([
-            html.Th("Id"), html.Th("Name"), html.Th("Date"), html.Th("Inventory level")
-        ]),
-        html.Tr([
-            html.Td(12), html.Td("Cow"), html.Td("2019-05-26"), html.Td(15623)
-        ])
-    ]),
-
     dash_table.DataTable(
-        id='table',
-        columns=[
-            {"name": "Id", "id": 1},
-            {"name": "Name", "id": 2},
-            {"name": "Date", "id": 3},
-            {"name": "Inventory Level", "id": 4},
-        ],
-        data=[
-            {1: 45, 2: "cow", 3: "2019-08-12", 4: 6876}
+        id='inventory-table',
+        columns=[],
+        data=[],
+        style_as_list_view=True,
+        style_cell={'padding': '5px'},
+        style_header={
+            'backgroundColor': 'white',
+            'fontWeight': 'bold'
+        },
+        style_cell_conditional=[
+            {
+                'if': {'column_id': c},
+                'textAlign': 'left'
+            } for c in ['Date', 'Region']
         ],
     )
 ])
+
+
+@app.callback(
+    Output(component_id='inventory-graph', component_property='figure'),
+    [Input(component_id='inventory-dropdown', component_property='value')]
+)
+def update_output_div(input_value):
+    url = 'http://127.0.0.1:8000/products/'
+    response = requests.post(url)
+    return {
+        'data': [
+            {'x': [1, 2, 3], 'y': [9, 3, 7], 'type': 'bar', 'name': 'SF'},
+            {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
+        ],
+        'layout': {
+            'title': 'Inventory per date'
+        }
+    }
+
+
+@app.callback(
+    [Output(component_id='inventory-table', component_property='columns'),
+     Output(component_id='inventory-table', component_property='data')],
+    [Input(component_id='inventory-dropdown', component_property='value')]
+)
+def update_table(input_value):
+    url = 'http://127.0.0.1:8000/products/'
+    content = json.loads(requests.get(url).content)
+    columns = [{'name': k, 'id': k} for k in content[0].keys()]
+    return columns, content
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
