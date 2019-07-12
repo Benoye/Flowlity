@@ -41,10 +41,7 @@ app.layout = html.Div(children=[
     dcc.Graph(
         id='inventory-graph',
         figure={
-            'data': [
-                {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
-                {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
-            ],
+            'data': [],
             'layout': {
                 'title': 'Inventory per date'
             }
@@ -61,12 +58,6 @@ app.layout = html.Div(children=[
             'backgroundColor': 'white',
             'fontWeight': 'bold'
         },
-        style_cell_conditional=[
-            {
-                'if': {'column_id': c},
-                'textAlign': 'left'
-            } for c in ['Date', 'Region']
-        ],
     )
 ])
 
