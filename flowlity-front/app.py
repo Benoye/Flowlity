@@ -77,14 +77,11 @@ app.layout = html.Div(children=[
     Output(component_id='inventory-graph', component_property='figure'),
     [Input(component_id='inventory-dropdown', component_property='value')]
 )
-def update_output_div(input_value):
-    url = 'http://127.0.0.1:8000/products/'
-    response = requests.post(url)
+def update_graph(input_value):
+    url = 'http://127.0.0.1:8000/products/draw_graph/'
+    content = json.loads(requests.get(url).content)
     return {
-        'data': [
-            {'x': [1, 2, 3], 'y': [9, 3, 7], 'type': 'bar', 'name': 'SF'},
-            {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
-        ],
+        'data': content,
         'layout': {
             'title': 'Inventory per date'
         }
